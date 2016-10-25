@@ -1,0 +1,313 @@
+{
+    "active": {         
+        "indicative": {
+            "preasens": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "imperfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "futurum_simplex": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "plusquam_perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "futurum_exactum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            }
+        },
+        "imperative": {
+            "preasens": {
+                "sing2": "",
+                "plur2": ""
+            }
+        },
+        "conjunctive": {
+            "preasens": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "imperfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "plusquam_perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            }
+        },
+        "infinitive": {
+            "preasens": "",
+            "perfectum": "",
+            "futurum": ""
+        },
+        "participium": {
+            "preasens": {
+                "sing": "",
+                "plur": ""
+            }
+        },
+        "gerundium": {
+            "sing": "",
+            "plur": ""
+        }
+    },
+    "passive": {
+        "indicative": {
+            "preasens": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "imperfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "futurum_simplex": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "plusquam_perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "futurum_exactum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            }
+        },
+        "conjunctive": {
+            "preasens": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "imperfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "plusquam_perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            }
+        },
+        "infinitive": {
+            "preasens": "",
+            "perfectum": "",
+            "futurum": ""
+        },
+        "participium": {
+            "preasens": {
+                "sing": "",
+                "plur": ""
+            }
+        },
+        "gerundivum": {
+            "sing": "",
+            "plur": ""
+        }
+    },
+    "deponent": {
+        "indicative": {
+            "preasens": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "imperfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "futurum_simplex": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "plusquam_perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "futurum_exactum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            }
+        },
+        "imperative": {
+            "preasens": {
+                "sing2": "",
+                "plur2": ""
+            }
+        },
+        "conjunctive": {
+            "preasens": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "imperfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            },
+            "plusquam_perfectum": {
+                "sing1": "",
+                "sing2": "",
+                "sing3": "",
+                "plur1": "",
+                "plur2": "",
+                "plur3": ""
+            }
+        },
+        "infinitive": {
+            "preasens": "",
+            "perfectum": "",
+            "futurum": ""
+        },
+        "participium": {
+            "preasens": {
+                "sing": "",
+                "plur": ""
+            }
+        }
+    }
+}

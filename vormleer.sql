@@ -26,8 +26,7 @@ create table verbs(
     mood integer not null,
     tense integer not null,
     person integer not null,
-    name varchar(255) not null,
-    CONSTRAINT name_unique UNIQUE (name)
+    name varchar(255) not null
 );
 
 insert into voice(name) values("active");

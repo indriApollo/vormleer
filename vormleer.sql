@@ -13,13 +13,21 @@ create table tense(
     name varchar(32) not null
 );
 
+create table gid(
+    id integer primary key autoincrement,
+    infinitive varchar(255) not null,
+    CONSTRAINT infinitive_unique UNIQUE (infinitive)
+);
+
 create table verbs(
     id integer primary key autoincrement,
+    gid integer not null,
     voice integer not null,
     mood integer not null,
     tense integer not null,
     person integer not null,
-    name varchar(255) not null
+    name varchar(255) not null,
+    CONSTRAINT name_unique UNIQUE (name)
 );
 
 insert into voice(name) values("active");

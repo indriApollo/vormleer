@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+    <input type="text" placeholder="url" id="url" value="http://localhost:8081/">
+    <input type="button" value="request" onclick="request()">
+    <br/>
+    <input type="text" placeholder="token" id="token">
+    <br/>
+    <input type="text" placeholder="method" id="method" value="POST">
+    <br/>
+    <textarea style="width: 400px; height: 600px; float: left;" id="jsondata">
+    {
+        "voice":"",
+        "mood":"",
+        "tense":"",
+        "conjugation":[
+        //
+        ]
+    }
+    </textarea>
+	<pre style="float: left;max-width: 50%;" id="ret"></pre>
+
+	<script type="text/javascript">
+    function request() {
+
+        var url = document.getElementById("url").value;
+        var method = document.getElementById("method").value;
+        var jsondata = document.getElementById("jsondata").value;
+        var token = document.getElementById("token").value;
+        console.log(jsondata);
+
+        if(!url) return;
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4) {
+                document.getElementById("ret").innerHTML = xmlhttp.status+"\n"+xmlhttp.responseText;
+            }
+        };
+        xmlhttp.open(method, url);
+        if(token) xmlhttp.setRequestHeader("Apitoken","token "+token);
+        xmlhttp.send(jsondata);
+    }
+	</script>
+</body>
+</html>

@@ -13,85 +13,321 @@
 	<!-- BOOTSTRAP & FRIENDS LOADED \[T]/ -->
 </head>
 <body>
-	<div class="container">
+<br>
+	<div class="container-fluid">
 		<div class="row">
+			<div class="col-md-3">
+				<form>
+					<input class="form-control" type="text" id="search" placeholder="search" oninput="search()">
+					<ul id="search-list"></ul>
+				</form>
+			</div>
 			<div class="col-md-4">
-				<ul>
+				<ul class="tree">
 					<li data-toggle="collapse" data-target="#active">
 						active
-						<ul id="active" class="collapse">
-							<li data-toggle="collapse" data-target="#active-indicative">
-								indicative
-								<ul id="active-indicative" class="collapse">
-									<li id="active-indicative-praesens" class="selector">
-										preasens
-									</li>
-									<li id="active-indicative-imperfectum" class="selector">
-										imperfectum
-									</li>
-									<li id="active-indicative-futurum_simplex" class="selector">
-										futurul_simplex
-									</li>
-									<li id="active-indicative-perfectum" class="selector">
-										perfectum
-									</li>
-									<li id="active-indicative-plusquam_perfectum" class="selector">
-										plusquam_perfectum
-									</li>
-									<li id="active-indicative-futurum_exactum" class="selector">
-										futurum_exactum
-									</li>
-								</ul>
+					</li>
+					<ul id="active" class="collapse">
+						<li data-toggle="collapse" data-target="#active-indicative">
+							indicative
+						</li>
+						<ul id="active-indicative" class="collapse">
+							<li id="active-indicative-praesens" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								preasens
 							</li>
-							<li data-toggle="collapse" data-target="#active-imperative">
-								imperative
-								<ul id="active-imperative" class="collapse">
-									<li id="active-imperative-praesens" class="selector">
-										preasens
-									</li>
-								</ul>
+							<li id="active-indicative-imperfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								imperfectum
 							</li>
-							<li data-toggle="collapse" data-target="#active-conjuctive">
-								conjuctive
-								<ul id="active-conjuctive" class="collapse">
-									<li id="active-indicative-praesens" class="selector">
-										preasens
-									</li>
-									<li id="active-indicative-imperfectum" class="selector">
-										imperfectum
-									</li>
-									<li id="active-indicative-futurum_simplex" class="selector">
-										futurul_simplex
-									</li>
-									<li id="active-indicative-perfectum" class="selector">
-										perfectum
-									</li>
-									<li id="active-indicative-plusquam_perfectum" class="selector">
-										plusquam_perfectum
-									</li>
-								</ul>
+							<li id="active-indicative-futurum_simplex" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurul_simplex
 							</li>
-							<li id="active-infinitive" class="selector">
-								infinitive
+							<li id="active-indicative-perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								perfectum
 							</li>
-							<li data-toggle="collapse" data-target="#active-participium">
-								participium
-								<ul id="active-participium" class="collapse">
-									<li id="active-participium-praesens" class="selector">
-										preasens
-									</li>
-								</ul>
+							<li id="active-indicative-plusquam_perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								plusquam_perfectum
 							</li>
-							<li id="active-gerundium" class="selector">
-								gerundium
+							<li id="active-indicative-futurum_exactum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurum_exactum
 							</li>
 						</ul>
+						<li data-toggle="collapse" data-target="#active-imperative">
+							imperative
+						</li>
+						<ul id="active-imperative" class="collapse">
+							<li id="active-imperative-praesens" data-fields="sing2 plur2" class="selector">
+								preasens
+							</li>
+						</ul>
+						<li data-toggle="collapse" data-target="#active-conjuctive">
+							conjuctive
+						</li>
+						<ul id="active-conjuctive" class="collapse">
+							<li id="active-conjuctive-praesens" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								preasens
+							</li>
+							<li id="active-conjuctive-imperfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								imperfectum
+							</li>
+							<li id="active-conjuctive-futurum_simplex" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurul_simplex
+							</li>
+							<li id="active-conjuctive-perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								perfectum
+							</li>
+							<li id="active-conjuctive-plusquam_perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								plusquam_perfectum
+							</li>
+						</ul>
+						<li id="active-infinitive" data-fields="praesens perfectum futurum" class="selector">
+							infinitive
+						</li>
+						<li data-toggle="collapse" data-target="#active-participium">
+							participium
+						</li>
+						<ul id="active-participium" class="collapse">
+							<li id="active-participium-praesens" data-fields="sing plur" class="selector">
+								preasens
+							</li>
+						</ul>
+						<li id="active-gerundium" data-fields="sing plur" class="selector">
+							gerundium
+						</li>
+					</ul>
+					<li data-toggle="collapse" data-target="#passive">
+						passive
 					</li>
-					<li>passive</li>
-					<li>deponent</li>
+					<ul id="passive" class="collapse">
+						<li data-toggle="collapse" data-target="#passive-indicative">
+							indicative
+						</li>
+						<ul id="passive-indicative" class="collapse">
+							<li id="passive-indicative-praesens" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								preasens
+							</li>
+							<li id="passive-indicative-imperfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								imperfectum
+							</li>
+							<li id="passive-indicative-futurum_simplex" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurul_simplex
+							</li>
+							<li id="passive-indicative-perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								perfectum
+							</li>
+							<li id="passive-indicative-plusquam_perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								plusquam_perfectum
+							</li>
+							<li id="passive-indicative-futurum_exactum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurum_exactum
+							</li>
+						</ul>
+						<li data-toggle="collapse" data-target="#passive-conjuctive">
+							conjuctive
+						</li>
+						<ul id="passive-conjuctive" class="collapse">
+							<li id="passive-conjuctive-praesens" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								preasens
+							</li>
+							<li id="passive-conjuctive-imperfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								imperfectum
+							</li>
+							<li id="passive-conjuctive-futurum_simplex" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurul_simplex
+							</li>
+							<li id="passive-conjuctive-perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								perfectum
+							</li>
+							<li id="passive-conjuctive-plusquam_perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								plusquam_perfectum
+							</li>
+						</ul>
+						<li id="passive-infinitive" data-fields="praesens perfectum futurum" class="selector">
+							infinitive
+						</li>
+						<li data-toggle="collapse" data-target="#passive-participium">
+							participium
+						</li>
+						<ul id="passive-participium" class="collapse">
+							<li id="passive-participium-praesens" data-fields="sing plur" class="selector">
+								preasens
+							</li>
+						</ul>
+						<li id="passive-gerundivum" data-fields="sing plur" class="selector">
+							gerundivum
+						</li>
+					</ul>
+					<li data-toggle="collapse" data-target="#deponent">
+						deponent
+					</li>
+					<ul id="deponent" class="collapse">
+						<li data-toggle="collapse" data-target="#deponent-indicative">
+							indicative
+						</li>
+						<ul id="deponent-indicative" class="collapse">
+							<li id="deponent-indicative-praesens" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								preasens
+							</li>
+							<li id="deponent-indicative-imperfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								imperfectum
+							</li>
+							<li id="deponent-indicative-futurum_simplex" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurul_simplex
+							</li>
+							<li id="deponent-indicative-perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								perfectum
+							</li>
+							<li id="deponent-indicative-plusquam_perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								plusquam_perfectum
+							</li>
+							<li id="deponent-indicative-futurum_exactum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurum_exactum
+							</li>
+						</ul>
+						<li data-toggle="collapse" data-target="#deponent-imperative">
+							imperative
+						</li>
+						<ul id="deponent-imperative" class="collapse">
+							<li id="deponent-imperative-praesens" data-fields="sing2 plur2" class="selector">
+								preasens
+							</li>
+						</ul>
+						<li data-toggle="collapse" data-target="#deponent-conjuctive">
+							conjuctive
+						</li>
+						<ul id="deponent-conjuctive" class="collapse">
+							<li id="deponent-conjuctive-praesens" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								preasens
+							</li>
+							<li id="deponent-conjuctive-imperfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								imperfectum
+							</li>
+							<li id="deponent-conjuctive-futurum_simplex" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								futurul_simplex
+							</li>
+							<li id="deponent-conjuctive-perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								perfectum
+							</li>
+							<li id="deponent-conjuctive-plusquam_perfectum" data-fields="sing1 sing2 sing3 plur1 plur2 plur3" class="selector">
+								plusquam_perfectum
+							</li>
+						</ul>
+						<li id="deponent-infinitive" data-fields="praesens perfectum futurum" class="selector">
+							infinitive
+						</li>
+						<li data-toggle="collapse" data-target="#deponent-participium">
+							participium
+						</li>
+						<ul id="deponent-participium" data-fields="sing plur" class="collapse">
+							<li id="deponent-participium-praesens" class="selector">
+								preasens
+							</li>
+						</ul>
+					</ul>
 				</ul>
+			</div>
+			<div class="col-md-5">
+				<div class="card" id="wizard">
+					<div class="card-header" id="wizard-title">verb wizard</div>
+					<div class="card-block">
+						<form>
+							<div class="form-group" id="wizard-container"></div>
+							<button type="button" class="btn btn-primary" onclick="save()">save</button>
+						</form>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
+
+<script type="text/javascript">
+
+	var infinitives = [];
+
+	var els = document.getElementsByClassName("selector");
+	for (var i = 0; i < els.length ; i++) {
+		els[i].addEventListener("click", function(){createWizard(this)}, false);
+	}
+	loadInfinitives();
+
+	function createWizard(el) {
+		var wizHeader = document.getElementById("wizard-title");
+		wizHeader.textContent = el.id.replace(/-/g," ");
+
+		var fields = el.getAttribute("data-fields").split(" ");
+		var cont = document.getElementById("wizard-container");
+		cont.innerHTML = "";
+		for(var i = 0; i < fields.length; i++) {
+			var input = document.createElement("input");
+			input.setAttribute("placeholder",fields[i]);
+			input.className = "form-control input-padding";
+			cont.appendChild(input);
+		}
+	}
+
+	function loadInfinitives() {
+		request("verbs", null, "GET", function(s,r) {
+			if(s != 200) {
+				console.log(r.message);
+			} else {
+				infinitives = r;
+				console.log(infinitives);
+				var cont = document.getElementById("search-list");
+				for(var i = 0; i < infinitives.length; i++) {
+					var li = document.createElement("li");
+					li.id = infinitives[i];
+					li.textContent = infinitives[i];
+					cont.appendChild(li);
+				}
+			}
+		})
+	}
+
+	function save() {
+		//
+	}
+
+	function search() {
+		//
+	}
+
+	function request(uri,jsondata,method,callback) {
+
+	    var url = "http://localhost:8081/"+uri;
+	    var xhr = new XMLHttpRequest();
+	    xhr.onreadystatechange = function() {
+	        if(xhr.readyState == 4)
+	        	try {
+					var r = JSON.parse(xhr.responseText);
+				} catch(e) {
+					console.log("Invalid json: "+e);
+					return;
+				}
+	            callback(xhr.status ,r);
+	    };
+	    xhr.open(method, url);
+	    xhr.send(jsondata);
+	}
+
+</script>
+<style type="text/css">
+	.input-padding {
+		margin-bottom: 10px; 
+	}
+
+	li {
+		list-style: none;
+		cursor: pointer;
+	}
+
+	.selector {
+		color: #4183D7;
+	}
+
+	.tree {
+		padding: 5px;
+		border-radius: .25rem;
+		border: 1px solid rgba(0,0,0,.125);
+	}
+</style>
 </body>
 </html>

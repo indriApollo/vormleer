@@ -1,7 +1,11 @@
+#!/usr/bin/env node
+
 var http = require('http');
 var zlib = require('zlib');
 var sqlite3 = require('sqlite3').verbose();
+var bcrypt = require('bcrypt');
 
+const EDITORTOKEN = "$2a$16$fklpBy1B1W30ZYrRhS.TAeQDAXHASWSwkt/HJtIMaS3nUtOK0Gb66";
 const PORT = 8081;
 const DBNAME = 'vormleer.db';
 const VALID_PROPERTIES = {
@@ -72,7 +76,7 @@ http.createServer(function(request, response) {
                 break;
 
             case 'POST':
-                handlePOST(url, body, response);
+                handlePOST(url, body, headers, response);
                 break;
 
             default:
@@ -207,11 +211,17 @@ function dbRequestHandler(response, func, args) {
     });
 }
 
-function handlePOST(url, body, response) {
+function handlePOST(url, body, headers, response) {
 
     console.log("POST request for "+url);
 
-    // We first test if the json is valid
+    //check token
+    if(!headers["Editor-Token"] || !bcrypt.compareSync(headers["Editor-Token"], EDITORTOKEN)) {
+        respond(response, "Invalid editor token", 403);
+        return;
+    }
+
+    // We test if the json is valid
     // If not-> abort
     try {
         var jsonreq = JSON.parse(body);

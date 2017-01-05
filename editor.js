@@ -1,7 +1,8 @@
 
-const IP = "192.168.0.11";
-const PORT = 8081;
+const PROTOCOL = "https";
+const HOST = "vormleer.indriapollo.be";
 
+var TOKEN;
 var infinitives = [];
 var inf = {
 	str: "",
@@ -42,7 +43,7 @@ function createWizard(el) {
 }
 
 function loadInfinitives() {
-	request("verbs", null, "GET", function(s,r) {
+	request("verbs", null, "GET", null,function(s,r) {
 		if(s != 200) {
 			console.log(r.message);
 		} else {
@@ -64,7 +65,7 @@ function loadInfinitives() {
 }
 
 function loadConjugation(callback) {
-	request("verbs/conjugation/"+inf.str+"/"+inf.params[0]+"/"+inf.params[1]+"/"+inf.params[2], null, "GET", function(s,r) {
+	request("verbs/conjugation/"+inf.str+"/"+inf.params[0]+"/"+inf.params[1]+"/"+inf.params[2], null, "GET", null, function(s,r) {
 		if(s != 200) {
 			console.log(r.message);
 		} else {
@@ -86,7 +87,7 @@ function save() {
 		reqobj.conjugation.push(els[i].fobj);
 	}
 
-	request("verbs/"+inf.str, reqobj, "POST", function(s,r) {
+	request("verbs/"+inf.str, reqobj, "POST", TOKEN, function(s,r) {
 		if(s != 201) {
 			console.log(r.message);
 		} else {
@@ -98,6 +99,10 @@ function save() {
 
 function search(query) {
 	//
+}
+
+function setToken(t) {
+	TOKEN = t;
 }
 
 function newInf() {
@@ -112,9 +117,9 @@ function newInf() {
 	infinitives.push(i);
 }
 
-function request(uri,jsondata,method,callback) {
+function request(uri,jsondata,method,token,callback) {
 
-    var url = "http://"+IP+":"+PORT+"/"+uri;
+    var url = PROTOCOL+"://"+HOST+"/"+uri;
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if(xhr.readyState == 4) {
@@ -128,6 +133,7 @@ function request(uri,jsondata,method,callback) {
         }
     };
     xhr.open(method, url);
+    if(token) setRequestHeader("Editor-Token",token);
     if(jsondata)
     	jsondata = JSON.stringify(jsondata);
     xhr.send(jsondata);

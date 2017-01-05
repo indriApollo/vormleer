@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+var bcrypt = require("bcrypt");
+var args = process.argv;
+if(args.length != 4) {
+    console.log("usage: bcryptpass <passwd> <saltlength>");
+    return;
+}
+
+var pass = args[2];
+var saltn = args[3];
+
+if(!Number(saltn) || saltn < 8) {
+    console.log("Your salt length is invalid");
+    return;
+}
+
+console.log(bcrypt.hashSync( pass, Number(saltn) ));

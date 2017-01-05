@@ -11,16 +11,40 @@
 	<!-- BOOTSTRAP JS -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
 	<!-- BOOTSTRAP & FRIENDS LOADED \[T]/ -->
+
+	<script src="editor.js"></script>
+	
+	<script>
+		window.onload = function() {
+			loadInfinitives();
+
+			var els = document.getElementsByClassName("selector");
+			for (var i = 0; i < els.length ; i++) {
+				els[i].addEventListener("click", function(){createWizard(this)}, false);
+			}
+		}
+	</script>
 </head>
 <body>
 <br>
 	<div class="container-fluid">
+		<div class="row header">
+			<div class="col-md-3">
+				<h1>EDITOR</h1>
+			</div>
+			<div class="col-md-9">
+				<h2 id="inf-title"></h2>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-md-3">
-				<form>
-					<input class="form-control" type="text" id="search" placeholder="search" oninput="search()">
-					<ul id="search-list"></ul>
-				</form>
+				<div class="input-group">
+					<input class="form-control" type="text" id="inf-input" placeholder="search" oninput="search(this.value.trim())">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button" onclick="newInf()">new</button>
+					</span>
+				</div>
+				<ul id="search-list"></ul>
 			</div>
 			<div class="col-md-4">
 				<ul class="tree">
@@ -79,9 +103,20 @@
 								plusquam_perfectum
 							</li>
 						</ul>
-						<li id="active-infinitive" data-fields="praesens perfectum futurum" class="selector">
+						<li data-toggle="collapse" data-target="#active-infinitive">
 							infinitive
 						</li>
+						<ul id="active-infinitive" class="collapse">
+							<li id="active-infinitive-praesens" data-fields="none" class="selector">
+								praesens
+							</li>
+							<li id="active-infinitive-perfectum" data-fields="none" class="selector">
+								perfectum
+							</li>
+							<li id="active-infinitive-futurum_simplex" data-fields="none" class="selector">
+								futurum
+							</li>
+						</ul>
 						<li data-toggle="collapse" data-target="#active-participium">
 							participium
 						</li>
@@ -90,7 +125,7 @@
 								preasens
 							</li>
 						</ul>
-						<li id="active-gerundium" data-fields="sing plur" class="selector">
+						<li id="active-gerundium-none" data-fields="sing plur" class="selector">
 							gerundium
 						</li>
 					</ul>
@@ -141,18 +176,26 @@
 								plusquam_perfectum
 							</li>
 						</ul>
-						<li id="passive-infinitive" data-fields="praesens perfectum futurum" class="selector">
+						<li data-toggle="collapse" data-target="#passive-infinitive">
 							infinitive
 						</li>
-						<li data-toggle="collapse" data-target="#passive-participium">
-							participium
-						</li>
+						<ul id="passive-infinitive" class="collapse">
+							<li id="passive-infinitive-praesens" data-fields="none" class="selector">
+								praesens
+							</li>
+							<li id="passive-infinitive-perfectum" data-fields="none" class="selector">
+								perfectum
+							</li>
+							<li id="passive-infinitive-futurum_simplex" data-fields="none" class="selector">
+								futurum
+							</li>
+						</ul>
 						<ul id="passive-participium" class="collapse">
 							<li id="passive-participium-praesens" data-fields="sing plur" class="selector">
 								preasens
 							</li>
 						</ul>
-						<li id="passive-gerundivum" data-fields="sing plur" class="selector">
+						<li id="passive-gerundivum-none" data-fields="sing plur" class="selector">
 							gerundivum
 						</li>
 					</ul>
@@ -211,9 +254,20 @@
 								plusquam_perfectum
 							</li>
 						</ul>
-						<li id="deponent-infinitive" data-fields="praesens perfectum futurum" class="selector">
+						<li data-toggle="collapse" data-target="#deponent-infinitive">
 							infinitive
 						</li>
+						<ul id="deponent-infinitive" class="collapse">
+							<li id="deponent-infinitive-praesens" data-fields="none" class="selector">
+								praesens
+							</li>
+							<li id="deponent-infinitive-perfectum" data-fields="none" class="selector">
+								perfectum
+							</li>
+							<li id="deponent-infinitive-futurum_simplex" data-fields="none" class="selector">
+								futurum
+							</li>
+						</ul>
 						<li data-toggle="collapse" data-target="#deponent-participium">
 							participium
 						</li>
@@ -239,76 +293,6 @@
 		</div>
 	</div>
 
-<script type="text/javascript">
-
-	var infinitives = [];
-
-	var els = document.getElementsByClassName("selector");
-	for (var i = 0; i < els.length ; i++) {
-		els[i].addEventListener("click", function(){createWizard(this)}, false);
-	}
-	loadInfinitives();
-
-	function createWizard(el) {
-		var wizHeader = document.getElementById("wizard-title");
-		wizHeader.textContent = el.id.replace(/-/g," ");
-
-		var fields = el.getAttribute("data-fields").split(" ");
-		var cont = document.getElementById("wizard-container");
-		cont.innerHTML = "";
-		for(var i = 0; i < fields.length; i++) {
-			var input = document.createElement("input");
-			input.setAttribute("placeholder",fields[i]);
-			input.className = "form-control input-padding";
-			cont.appendChild(input);
-		}
-	}
-
-	function loadInfinitives() {
-		request("verbs", null, "GET", function(s,r) {
-			if(s != 200) {
-				console.log(r.message);
-			} else {
-				infinitives = r;
-				console.log(infinitives);
-				var cont = document.getElementById("search-list");
-				for(var i = 0; i < infinitives.length; i++) {
-					var li = document.createElement("li");
-					li.id = infinitives[i];
-					li.textContent = infinitives[i];
-					cont.appendChild(li);
-				}
-			}
-		})
-	}
-
-	function save() {
-		//
-	}
-
-	function search() {
-		//
-	}
-
-	function request(uri,jsondata,method,callback) {
-
-	    var url = "http://localhost:8081/"+uri;
-	    var xhr = new XMLHttpRequest();
-	    xhr.onreadystatechange = function() {
-	        if(xhr.readyState == 4)
-	        	try {
-					var r = JSON.parse(xhr.responseText);
-				} catch(e) {
-					console.log("Invalid json: "+e);
-					return;
-				}
-	            callback(xhr.status ,r);
-	    };
-	    xhr.open(method, url);
-	    xhr.send(jsondata);
-	}
-
-</script>
 <style type="text/css">
 	.input-padding {
 		margin-bottom: 10px; 
@@ -327,6 +311,11 @@
 		padding: 5px;
 		border-radius: .25rem;
 		border: 1px solid rgba(0,0,0,.125);
+	}
+	.header {
+		margin-top: 10px;
+		margin-bottom: 10px;
+		border-bottom: 1px solid black;
 	}
 </style>
 </body>

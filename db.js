@@ -25,9 +25,23 @@ const VALID_PROPERTIES = {
         "futurum_simplex",
         "perfectum",
         "plusquam_perfectum",
-        "futurum_exactum"
+        "futurum_exactum",
+        "none"
+    ],
+    person:[
+        "sing",
+        "sing1",
+        "sing2",
+        "sing3",
+        "plur",
+        "plur1",
+        "plur2",
+        "plur3",
+        "none"
     ]
 }
+const JOIN = "JOIN gid ON verbs.gid=gid.id JOIN voice ON verbs.vid=voice.id \
+    JOIN mood ON verbs.mid=mood.id JOIN tense ON verbs.tid=tense.id JOIN person ON verbs.pid=person.id ";
 
 // SERVER
 
@@ -55,15 +69,15 @@ http.createServer(function(request, response) {
         switch(method) {
             case 'GET':
                 handleGET(url, response);
-            	break;
+                break;
 
             case 'POST':
                 handlePOST(url, body, response);
-            	break;
+                break;
 
             default:
-            	respond(response, "Unsupported http method", 400);
-            	break;
+                respond(response, "Unsupported http method", 400);
+                break;
         }
     });
 }).listen(PORT);
@@ -131,25 +145,31 @@ function insertVerb(db, params, conjugation, callback) {
         })
     }
 
-    function insertparamstx() {
-        params.$name = conjugation[params.$person];
+    function insertparamstx(index) {
+        params.$person = Object.keys(conjugation[index])[0];
+        params.$name = conjugation[index][params.$person];
         console.log(params);
-        db.run("INSERT INTO verbs (gid, voice, mood, tense, person, name) VALUES ( (SELECT id FROM gid WHERE infinitive=$infinitive LIMIT 1),$voice,$mood,$tense,$person, $name)", params, function(e) {
+        db.run("INSERT INTO verbs (gid, vid, mid, tid, pid, str) \
+                SELECT gid.id, voice.id, mood.id, tense.id, person.id, $name AS str \
+                FROM gid, voice, mood, tense, person \
+                WHERE gid.infinitive=$infinitive AND voice.str=$voice AND mood.str = $mood \
+                AND tense.str=$tense AND person.str=$person", params, function(e) {
             if(e) {
                 console.log(e.message);
                 rollbacktx();
-                throw Error();
             }
-            else if(++params.$person < conjugation.length) {
-                insertparamstx();
+            else if(++index < conjugation.length) {
+                insertparamstx(index);
             }
             else committx();
         })
     }
 
     function cleartensetx() {
-        // y u no insert or replace ? -> else unique constraint error if trying to swap 2 names
-        db.run("DELETE FROM verbs WHERE gid=(SELECT id FROM gid WHERE infinitive=? LIMIT 1) AND voice=? AND mood=? AND tense=?", [
+        
+        db.run("DELETE FROM verbs WHERE verbs.id IN \
+                (SELECT verbs.id FROM verbs "+JOIN+" \
+                WHERE infinitive=? AND voice.str=? AND mood.str=? AND tense.str=?)", [
                 params.$infinitive, params.$voice, params.$mood, params.$tense
             ], function(e) {
             if(e) {
@@ -158,7 +178,9 @@ function insertVerb(db, params, conjugation, callback) {
                 throw Error();
             } else {
                 console.log("delete done");
-                insertparamstx();
+                //an empty conjugation array means only a deletion
+                if(conjugation.length > 0) insertparamstx("0");
+                else committx();
             }
         })
     }
@@ -215,7 +237,7 @@ function handlePOST(url, body, response) {
             if(!checkString("tense")) throw "tense";
 
             if(!jsonreq.hasOwnProperty("conjugation")
-                || !Array.isArray(jsonreq.conjugation) || jsonreq.conjugation.length < 1)
+                || !Array.isArray(jsonreq.conjugation))
                 throw "conjugation";
         }
         catch(e) {
@@ -231,7 +253,6 @@ function handlePOST(url, body, response) {
         params.$mood = jsonreq.mood;
         params.$tense = jsonreq.tense;
         params.$infinitive = matches[1];
-        params.$person = 0;
 
         dbRequestHandler(response, insertVerb, [params, jsonreq.conjugation]);
 
@@ -257,7 +278,8 @@ function searchVerb(db, query, callback) {
 
     if(!query) callback("Missing search term", 400);
     else {
-        db.all("SELECT voice,mood,tense,person,name,infinitive FROM verbs LEFT JOIN gid ON verbs.gid=gid.id WHERE name LIKE ?", "%"+query+"%",function(e, rows) {
+        db.all("SELECT infinitive, voice.str AS voice, mood.str AS mood ,tense.str AS tense ,person.str AS person, verbs.str AS name \
+                FROM verbs "+JOIN+" WHERE verbs.str LIKE ?", "%"+query+"%",function(e, rows) {
             if(e) callback("DB ERROR"+e, 500);
             else callback(rows, 200);
         })
@@ -267,6 +289,11 @@ function searchVerb(db, query, callback) {
 function returnConjugation(db, cmd, callback) {
 
     var params = {};
+
+    if(cmd.length > 6) {
+        callback("Too many parameters", 400);
+        return;
+    }
 
     params.$infinitive = cmd[1];
     if(!params.$infinitive) {
@@ -282,7 +309,7 @@ function returnConjugation(db, cmd, callback) {
             return;
         }
         params.$voice = cmd[2];
-        clause+= "AND voice=$voice ";
+        clause+= "AND voice.str=$voice ";
     }
 
     if(cmd[3] && cmd[3] !="*") {
@@ -291,7 +318,7 @@ function returnConjugation(db, cmd, callback) {
             return;
         }
         params.$mood = cmd[3];
-        clause += "AND mood=$mood ";
+        clause += "AND mood.str=$mood ";
     }
 
     if(cmd[4] && cmd[4] !="*") {
@@ -300,11 +327,21 @@ function returnConjugation(db, cmd, callback) {
             return;
         }
         params.$tense = cmd[4];
-        clause += "AND tense=$tense ";
+        clause += "AND tense.str=$tense ";
+    }
+
+    if(cmd[5] && cmd[5] !="*") {
+        if(VALID_PROPERTIES.person.indexOf(cmd[5]) <= -1) {
+            callback("Invalid person parameter", 400);
+            return;
+        }
+        params.$person = cmd[5];
+        clause += "AND person.str=$person ";
     }
 
     var result = [];
-    db.each("SELECT voice,mood,tense,person,name FROM verbs LEFT JOIN gid ON verbs.gid=gid.id "+clause+" ORDER BY voice AND mood AND tense", params, function(e,row) {
+    db.each("SELECT voice.str AS voice, mood.str AS mood, tense.str AS tense, person.str AS person, verbs.str AS name \
+            FROM verbs "+JOIN+clause+" ORDER BY voice AND mood AND tense", params, function(e,row) {
         if(e) {
             console.log(e.message);
             callback("DB ERROR", 500);
@@ -318,11 +355,14 @@ function returnConjugation(db, cmd, callback) {
                     conjugation: []
                 });
             }
-            result[result.length-1].conjugation[row.person] = row.name;
+            var fobj = {};
+            fobj[row.person] = row.name;
+            result[result.length-1].conjugation.push(fobj);
         }
     }, function(e, nrows) {
         if(e) {
             console.log(e.message);
+            throw Error();
             callback("DB ERROR", 500);
         } else {
             callback(result, 200);
@@ -334,7 +374,7 @@ function handleGET(url, response) {
 
     console.log("GET request for "+url);
     
-    var matches = url.match(/^\/verbs\/?([a-zA-Z/*]*$)/);
+    var matches = url.match(/^\/verbs\/?([a-zA-Z1-3/*_]*$)/);
     if(matches) {
         var cmd = matches[1];
         if(!cmd) {

@@ -26,7 +26,6 @@ var jobs = filenames.length;
 for(var i = 0; i < jobs ; i++) {
     cache(filenames[i], function(r,f) {
         var l = f.split('.')[0];
-        console.log("label: "+l);
         pages[l] = r;
         --jobs;
         if(jobs === 0) server();
@@ -64,7 +63,6 @@ function server() {
 
                 if(url == '/' || url == '/index.html') {
                     data = pages['index'];
-                    console.log(pages);
                 }
                 else if(url == '/editor') {
                     data = pages['editor'];
@@ -83,8 +81,3 @@ function server() {
     }).listen(PORT);
     console.log("server listening on "+PORT);
 }
-
-process.on( 'SIGINT', function() {
-    console.log('CLOSING [SIGINT]');
-    process.exit();
-});

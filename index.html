@@ -1,7 +1,9 @@
-!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=0.7">
+
 	<title>VORMLEER</title>
 	<!-- BOOTSTRAP V4 ALPHA & DEPENDENCIES -->
 	<!-- JQUERY 3.1.1 -->
@@ -11,8 +13,209 @@
 	<!-- BOOTSTRAP JS -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
 	<!-- BOOTSTRAP & FRIENDS LOADED \[T]/ -->
+
+<script>
+
+var filter = {};
+
+function request(uri,jsondata,method,callback) {
+
+    var url = "http://192.168.0.11:8081/"+uri;
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState == 4) {
+        	try {
+				var r = JSON.parse(xhr.responseText);
+			} catch(e) {
+				console.log("Invalid json: "+e);
+				return;
+			}
+            callback(xhr.status ,r);
+        }
+    };
+    xhr.open(method, url);
+    if(jsondata)
+    	jsondata = JSON.stringify(jsondata);
+    xhr.send(jsondata);
+}
+
+function createcard(voice, mood, tense, infinitive, conjugation) {
+
+	var cont = document.getElementById("content-container");
+	var div = document.createElement("div");
+	div.className="col-md-3";
+	var card = document.createElement("div");
+	card.className = "card";
+
+	var cardHeader = document.createElement("div");
+	cardHeader.className = "card-header";
+	cardHeader.textContent = infinitive+": "+voice+" "+mood+" "+tense;
+	card.appendChild(cardHeader);
+
+	var ul = document.createElement("ul");
+
+	for(var i = 0;i<conjugation.length; i++) {
+		var key = Object.keys(conjugation[i])[0];
+		var str = conjugation[i][key];
+
+		
+		var li = document.createElement("li");
+		li.textContent = key+": \t"+str;
+		ul.appendChild(li);
+	}
+
+	card.appendChild(ul);
+	div.appendChild(card);
+	cont.appendChild(div);
+}
+
+function search(query) {
+	document.getElementById("content-container").innerHTML = "";
+	if(!query) return;
+	request("verbs/search/"+query, null, "GET", function(s,r) {
+		if(s != 200) {
+			console.log(r.message);
+		} else {
+			if(r.length >= 1) {
+				for(var i = 0;i<r.length; i++) {
+					var conj = {};
+					conj[r[i].person] = r[i].name;
+					createcard(r[i].voice, r[i].mood, r[i].tense, r[i].infinitive, [conj]);
+				}
+			}
+		}
+	});
+}
+
+function getConjugation() {
+	document.getElementById("content-container").innerHTML = "";
+
+	if(!filter.infinitive) return;
+	if(!filter.voice) filter.voice = "*";
+	if(!filter.mood) filter.mood = "*";
+	if(!filter.tense) filter.tense = "*";
+
+	var uri = "verbs/conjugation/"+filter.infinitive+"/"+filter.voice+"/"+filter.mood+"/"+filter.tense;
+	request(uri, null, "GET", function(s,r){
+		if(s != 200) {
+			console.log(r.message);
+		} else {
+			if(r.length >= 1) {
+				for(var i = 0;i<r.length; i++) {
+					createcard(r[i].voice, r[i].mood, r[i].tense, filter.infinitive, r[i].conjugation);
+				}
+			}
+		}
+	});
+}
+
+function setInf(inf) {
+	filter.infinitive = inf;
+}
+
+function setFilter(el, param) {
+
+	var h = document.getElementById("header-"+param);
+	var a = el.getAttribute("data-field");
+	h.textContent = el.textContent;
+	filter[param] = a;
+
+}
+
+window.onload = function() {
+
+	function setEvent(param) {
+		var els = document.getElementsByClassName("selector-"+param);
+		for (var i = 0; i < els.length ; i++) {
+			els[i].addEventListener("click", function(){setFilter(this, param)}, false);
+		}
+	}
+
+	setEvent("voice");
+	setEvent("mood");
+	setEvent("tense");
+
+	document.getElementById("search-input").value = "";
+	document.getElementById("inf-input").value = "";
+}
+
+</script>
 </head>
 <body>
-<h1>Hello World</h1>
+<div class="container-fluid">
+	<div class="row header">
+		<div class="col-md-3">
+			<h1>VORMLEER</h1>
+		</div>
+		<div class="col-md-9">
+			<form class="form-inline">
+				<div class="form-group">
+					<input type="text" class="form-control" id="search-input" oninput="search(this.value.trim())" placeholder="search verb">
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<input type="text" class="form-control" id="inf-input" placeholder="infinitive" oninput="setInf(this.value.trim())">
+						<div class="input-group-btn">
+						    <button type="button" class="btn btn-secondary dropdown-toggle"
+						            data-toggle="dropdown" id="header-voice" aria-haspopup="true" aria-expanded="false">
+						      Voice
+						    </button>
+						    <div class="dropdown-menu">
+						    	<button class="dropdown-item selector-voice" type="button" data-field="active">Active</button>
+						    	<button class="dropdown-item selector-voice" type="button" data-field="passive">Passive</button>
+						    	<button class="dropdown-item selector-voice" type="button" data-field="deponent">Deponent</button>
+						    	<button class="dropdown-item selector-voice" type="button" data-field="*">Any</button>
+						  	</div>
+						</div>
+						<div class="input-group-btn">
+						  	<button type="button" class="btn btn-secondary dropdown-toggle"
+						            data-toggle="dropdown" id="header-mood" aria-haspopup="true" aria-expanded="false">
+						      Mood
+						    </button>
+						    <div class="dropdown-menu">
+						    	<button class="dropdown-item selector-mood" type="button" data-field="indicative">Indicative</button>
+						    	<button class="dropdown-item selector-mood" type="button" data-field="imperative">Imperative</button>
+						    	<button class="dropdown-item selector-mood" type="button" data-field="conjuctive">Conjuctive</button>
+						    	<button class="dropdown-item selector-mood" type="button" data-field="participium">Participium</button>
+						    	<button class="dropdown-item selector-mood" type="button" data-field="gerundium">Gerundium</button>
+						    	<button class="dropdown-item selector-mood" type="button" data-field="gerundivum">Gerundivum</button>
+						    	<button class="dropdown-item selector-mood" type="button" data-field="infinitive">Infinitive</button>
+						    	<button class="dropdown-item selector-mood" type="button" data-field="*">Any</button>
+						  	</div>
+						</div>
+						<div class="input-group-btn">
+						  	<button type="button" class="btn btn-secondary dropdown-toggle"
+						            data-toggle="dropdown" id="header-tense" aria-haspopup="true" aria-expanded="false">
+						      Tense
+						    </button>
+						    <div class="dropdown-menu">
+						    	<button class="dropdown-item selector-tense" type="button" data-field="praesens">Praesens</button>
+						    	<button class="dropdown-item selector-tense" type="button" data-field="imperfectum">Imperfectum</button>
+						    	<button class="dropdown-item selector-tense" type="button" data-field="futurum_simplex">Futurum Simplex</button>
+						    	<button class="dropdown-item selector-tense" type="button" data-field="perfectum">Perfectum</button>
+						    	<button class="dropdown-item selector-tense" type="button" data-field="plusquam_perfectum">Plusquam Perfectum</button>
+						    	<button class="dropdown-item selector-tense" type="button" data-field="futurum_exactum">Futurum Exactum</button>
+						    	<button class="dropdown-item selector-tense" type="button" data-field="*">Any</button>
+						  	</div>
+						</div>
+						<span class="input-group-btn">
+					    	<button class="btn btn-primary" type="button" onclick="getConjugation()">Show</button>
+					  	</span>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div id="content-container" class="row">
+		
+	</div>
+</div>
+<style type="text/css">
+	.header {
+		margin-top: 10px;
+		margin-bottom: 10px;
+		border-bottom: 1px solid black;
+	}
+</style>
 </body>
 </html>

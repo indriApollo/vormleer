@@ -20,7 +20,7 @@ var filter = {};
 
 function request(uri,jsondata,method,callback) {
 
-    var url = "http://192.168.0.11:8081/"+uri;
+    var url = "https://vormleer.indriapollo.be/"+uri;
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if(xhr.readyState == 4) {

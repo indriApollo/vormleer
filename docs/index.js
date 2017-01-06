@@ -66,7 +66,7 @@ function handleBreadcrumbClick(el, pname) {
 		if(key == "infinitive")
 			document.getElementById("inf-input").value = filter[key];
 		else 
-			document.getElementById("header-"+key).textContent = (filter[key] != "*") filter[key] : "Any";
+			document.getElementById("header-"+key).textContent = (filter[key] != "*")? filter[key] : "Any";
 	}
 
 	getConjugation();

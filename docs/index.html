@@ -14,132 +14,7 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
 	<!-- BOOTSTRAP & FRIENDS LOADED \[T]/ -->
 
-<script>
-
-var filter = {};
-
-function request(uri,jsondata,method,callback) {
-
-    var url = "https://vormleer.indriapollo.be/"+uri;
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState == 4) {
-        	try {
-				var r = JSON.parse(xhr.responseText);
-			} catch(e) {
-				console.log("Invalid json: "+e);
-				return;
-			}
-            callback(xhr.status ,r);
-        }
-    };
-    xhr.open(method, url);
-    if(jsondata)
-    	jsondata = JSON.stringify(jsondata);
-    xhr.send(jsondata);
-}
-
-function createcard(voice, mood, tense, infinitive, conjugation) {
-
-	var cont = document.getElementById("content-container");
-	var div = document.createElement("div");
-	div.className="col-md-3";
-	var card = document.createElement("div");
-	card.className = "card";
-
-	var cardHeader = document.createElement("div");
-	cardHeader.className = "card-header";
-	cardHeader.textContent = infinitive+": "+voice+" "+mood+" "+tense;
-	card.appendChild(cardHeader);
-
-	var ul = document.createElement("ul");
-
-	for(var i = 0;i<conjugation.length; i++) {
-		var key = Object.keys(conjugation[i])[0];
-		var str = conjugation[i][key];
-
-		
-		var li = document.createElement("li");
-		li.textContent = key+": \t"+str;
-		ul.appendChild(li);
-	}
-
-	card.appendChild(ul);
-	div.appendChild(card);
-	cont.appendChild(div);
-}
-
-function search(query) {
-	document.getElementById("content-container").innerHTML = "";
-	if(!query) return;
-	request("verbs/search/"+query, null, "GET", function(s,r) {
-		if(s != 200) {
-			console.log(r.message);
-		} else {
-			if(r.length >= 1) {
-				for(var i = 0;i<r.length; i++) {
-					var conj = {};
-					conj[r[i].person] = r[i].name;
-					createcard(r[i].voice, r[i].mood, r[i].tense, r[i].infinitive, [conj]);
-				}
-			}
-		}
-	});
-}
-
-function getConjugation() {
-	document.getElementById("content-container").innerHTML = "";
-
-	if(!filter.infinitive) return;
-	if(!filter.voice) filter.voice = "*";
-	if(!filter.mood) filter.mood = "*";
-	if(!filter.tense) filter.tense = "*";
-
-	var uri = "verbs/conjugation/"+filter.infinitive+"/"+filter.voice+"/"+filter.mood+"/"+filter.tense;
-	request(uri, null, "GET", function(s,r){
-		if(s != 200) {
-			console.log(r.message);
-		} else {
-			if(r.length >= 1) {
-				for(var i = 0;i<r.length; i++) {
-					createcard(r[i].voice, r[i].mood, r[i].tense, filter.infinitive, r[i].conjugation);
-				}
-			}
-		}
-	});
-}
-
-function setInf(inf) {
-	filter.infinitive = inf;
-}
-
-function setFilter(el, param) {
-
-	var h = document.getElementById("header-"+param);
-	var a = el.getAttribute("data-field");
-	h.textContent = el.textContent;
-	filter[param] = a;
-
-}
-
-window.onload = function() {
-
-	function setEvent(param) {
-		var els = document.getElementsByClassName("selector-"+param);
-		for (var i = 0; i < els.length ; i++) {
-			els[i].addEventListener("click", function(){setFilter(this, param)}, false);
-		}
-	}
-
-	setEvent("voice");
-	setEvent("mood");
-	setEvent("tense");
-
-	document.getElementById("search-input").value = "";
-	document.getElementById("inf-input").value = "";
-}
-
-</script>
+	<script src="index.js"></script>
 </head>
 <body>
 <div class="container-fluid">
@@ -215,6 +90,12 @@ window.onload = function() {
 		margin-top: 10px;
 		margin-bottom: 10px;
 		border-bottom: 1px solid black;
+	}
+	#content-container {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 </style>
 </body>

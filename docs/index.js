@@ -46,7 +46,7 @@ function createcard(voice, mood, tense, infinitive, conjugation) {
 		var p = document.createElement("p");
 
 		var span = document.createElement("span");
-		span.textContent = (key != "none")? key.substr(0,4)+" "+key.substr(4,1) : tense;
+		span.textContent = (key != "none")? key.substr(0,4)+" "+key.substr(4,1) : tense.replace(/_/g," ");
 		span.className = "text-person";
 		p.appendChild(span);
 

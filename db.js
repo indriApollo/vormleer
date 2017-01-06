@@ -5,7 +5,7 @@ var zlib = require('zlib');
 var sqlite3 = require('sqlite3').verbose();
 var bcrypt = require('bcrypt');
 
-const EDITORTOKEN = "$2a$16$fklpBy1B1W30ZYrRhS.TAeQDAXHASWSwkt/HJtIMaS3nUtOK0Gb66";
+const EDITORTOKEN = "$2a$08$C1wg4qsWaDsaiIFJISy1UuNIzzZXR2r.19HnCcvC4LMXIMM9BxvNK";
 const PORT = 8081;
 const DBNAME = 'vormleer.db';
 const VALID_PROPERTIES = {
@@ -76,9 +76,11 @@ http.createServer(function(request, response) {
                 break;
 
             case 'POST':
-                handlePOST(url, body, headers, response);
+                checkToken(url, body, headers, response);
                 break;
-
+            case 'OPTIONS':
+                handleCORS(response);
+                break;
             default:
                 respond(response, "Unsupported http method", 400);
                 break;
@@ -88,6 +90,34 @@ http.createServer(function(request, response) {
 console.log("server listening on "+PORT);
 
 // FUNCTIONS
+
+function checkToken(url, body, headers, response) {
+
+    if(!headers["editor-token"]) {
+        respond(response, "Missing editor token", 403);
+        return;
+    }
+
+    bcrypt.compare(headers["editor-token"], EDITORTOKEN, function(e,r) {
+        if(e) {
+            console.log(e.message);
+            respond(response, "BCRYPT ERROR", 500);
+        } else if(r) {
+            handlePOST(url, body, response);
+        } else {
+            respond(response, "Invalid editor token", 403);
+        }
+    })
+}
+
+function handleCORS(response) {
+    
+    response.statusCode = 200;
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Headers', 'Editor-Token,User-Agent,Content-Type'); //can't use * !
+    response.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+    response.end();
+}
 
 function respond(response, data, status) {
 
@@ -152,7 +182,7 @@ function insertVerb(db, params, conjugation, callback) {
     function insertparamstx(index) {
         params.$person = Object.keys(conjugation[index])[0];
         params.$name = conjugation[index][params.$person];
-        console.log(params);
+
         db.run("INSERT INTO verbs (gid, vid, mid, tid, pid, str) \
                 SELECT gid.id, voice.id, mood.id, tense.id, person.id, $name AS str \
                 FROM gid, voice, mood, tense, person \
@@ -211,15 +241,9 @@ function dbRequestHandler(response, func, args) {
     });
 }
 
-function handlePOST(url, body, headers, response) {
+function handlePOST(url, body, response) {
 
     console.log("POST request for "+url);
-
-    //check token
-    if(!headers["Editor-Token"] || !bcrypt.compareSync(headers["Editor-Token"], EDITORTOKEN)) {
-        respond(response, "Invalid editor token", 403);
-        return;
-    }
 
     // We test if the json is valid
     // If not-> abort

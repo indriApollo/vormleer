@@ -2,6 +2,9 @@ const PROTOCOL = "https";
 const HOST = "vormleer.indriapollo.be";
 
 var filter = {};
+filter.voice = "*";
+filter.mood = "*";
+filter.tense = "*";
 
 function createcard(voice, mood, tense, infinitive, conjugation) {
 
@@ -30,22 +33,33 @@ function createcard(voice, mood, tense, infinitive, conjugation) {
 	createSpan("mood", mood);
 	if(tense != "none") createSpan("tense", tense);
 
-	//cardHeader.appendChild(nav);
 	card.appendChild(nav);
 
-	var ul = document.createElement("ul");
+	var div = document.createElement("div");
+	div.className = "card-block";
 
 	for(var i = 0;i<conjugation.length; i++) {
 		var key = Object.keys(conjugation[i])[0];
 		var str = conjugation[i][key];
 
 		
-		var li = document.createElement("li");
-		li.textContent = key+": \t"+str;
-		ul.appendChild(li);
+		var p = document.createElement("p");
+
+		var span = document.createElement("span");
+		span.textContent = (key != "none")? key.substr(0,4)+" "+key.substr(4,1) : tense;
+		span.className = "text-person";
+		p.appendChild(span);
+
+		span = document.createElement("span");
+		span.textContent = str;
+		span.className = "text-conjugation";
+		p.appendChild(span);
+
+		p.className = "card-text";
+		div.appendChild(p);
 	}
 
-	card.appendChild(ul);
+	card.appendChild(div);
 	cont.appendChild(card);
 }
 
@@ -94,9 +108,6 @@ function getConjugation() {
 	document.getElementById("content-container").innerHTML = "";
 
 	if(!filter.infinitive) return;
-	if(!filter.voice) filter.voice = "*";
-	if(!filter.mood) filter.mood = "*";
-	if(!filter.tense) filter.tense = "*";
 
 	var uri = "verbs/conjugation/"+filter.infinitive+"/"+filter.voice+"/"+filter.mood+"/"+filter.tense;
 	request(uri, function(s,r){
@@ -113,6 +124,8 @@ function getConjugation() {
 }
 
 function setInf(inf) {
+	//Firefox complains when trying to assign a global var
+	//from an anonymous function inside an event attribute
 	filter.infinitive = inf;
 }
 
@@ -157,6 +170,7 @@ window.onload = function() {
 	setEvent("mood");
 	setEvent("tense");
 
+	//Browsers leave the input values displayed between reloads. It messes with our filter.
 	document.getElementById("search-input").value = "";
 	document.getElementById("inf-input").value = "";
 }

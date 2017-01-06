@@ -1,0 +1,14 @@
+[Unit]
+Description=Node.js vormleer db
+Requires=lighttpd.service
+
+[Service]
+WorkingDirectory=/home/raphael/vormleer
+ExecStart=/usr/bin/node db.js
+Restart=always
+RestartSec=1
+SyslogIdentifier=vormleerd
+User=raphael
+
+[Install]
+WantedBy=multi-user.target

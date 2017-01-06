@@ -33,7 +33,7 @@
 				<h1>EDITOR</h1>
 			</div>
 			<div class="col-md-7">
-				<h2 id="inf-title"></h2>
+				<h2 id="inf-title">No infinitive selected yet</h2>
 			</div>
 			<div class="col-md-2">
 				<input class="form-control" type="password" placeholder="token" oninput="setToken(this.value.trim())">
@@ -42,7 +42,7 @@
 		<div class="row">
 			<div class="col-md-3">
 				<div class="input-group">
-					<input class="form-control" type="text" id="inf-input" placeholder="search" oninput="search(this.value.trim())">
+					<input class="form-control" type="text" id="inf-input" placeholder="search" oninput="search(this.value.trim().toLocaleLowerCase())">
 					<span class="input-group-btn">
 						<button class="btn btn-primary" type="button" onclick="newInf()">new</button>
 					</span>

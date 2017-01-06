@@ -48,20 +48,27 @@ function loadInfinitives() {
 			console.log(r.message);
 		} else {
 			infinitives = r;
-			var cont = document.getElementById("search-list");
-			for(var i = 0; i < infinitives.length; i++) {
-				var li = document.createElement("li");
-				li.id = infinitives[i];
-				li.textContent = infinitives[i];
-				li.onclick = function() {
-					inf.str = this.id;
-					document.getElementById("inf-title").textContent = this.id;
-					console.log("infinitive: "+inf.str);
-				}
-				cont.appendChild(li);
-			}
+			createSearchList(r);
 		}
 	});
+}
+
+function createSearchList(l) {
+
+	var cont = document.getElementById("search-list");
+	cont.innerHTML = "";
+	var len = (l.length < 20)? l.length : 20;
+	for(var i = 0; i < len; i++) {
+		var li = document.createElement("li");
+		li.id = l[i];
+		li.textContent = l[i];
+		li.onclick = function() {
+			inf.str = this.id;
+			document.getElementById("inf-title").textContent = this.id;
+			console.log("infinitive: "+inf.str);
+		}
+		cont.appendChild(li);
+	}
 }
 
 function loadConjugation(callback) {
@@ -75,6 +82,8 @@ function loadConjugation(callback) {
 }
 
 function save() {
+	if(!inf.str) return;
+
 	var reqobj = {};
 	reqobj.voice = inf.params[0];
 	reqobj.mood = inf.params[1];
@@ -97,7 +106,20 @@ function save() {
 }
 
 function search(query) {
-	//
+	if(!query) {
+		createSearchList(infinitives);
+		return;
+	}
+
+	console.log("search for "+query);
+	var results = [];
+	for(var i = 0; i < infinitives.length; i++) {
+		if(infinitives[i].indexOf(query) != -1) {
+			results.push(infinitives[i]);
+		}
+		if(results.length >= 20) break;
+	}
+	createSearchList(results);
 }
 
 function setToken(t) {
@@ -105,7 +127,7 @@ function setToken(t) {
 }
 
 function newInf() {
-	var i  = document.getElementById("inf-input").value.trim();
+	var i  = document.getElementById("inf-input").value.trim().toLocaleLowerCase();
 	if(infinitives.indexOf(i) != -1) {
 		alert("Already exists");
 		return;

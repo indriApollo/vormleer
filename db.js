@@ -314,7 +314,7 @@ function searchVerb(db, query, callback) {
     else {
         db.all("SELECT infinitive, voice.str AS voice, mood.str AS mood ,tense.str AS tense ,person.str AS person, verbs.str AS name \
                 FROM verbs "+JOIN+" WHERE verbs.str LIKE ?", "%"+query+"%",function(e, rows) {
-            if(e) callback("DB ERROR"+e, 500);
+            if(e) callback("DB ERROR", 500);
             else callback(rows, 200);
         })
     }

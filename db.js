@@ -181,7 +181,7 @@ function insertVerb(db, params, conjugation, callback) {
 
     function insertparamstx(index) {
         params.$person = Object.keys(conjugation[index])[0];
-        params.$name = conjugation[index][params.$person];
+        params.$name = conjugation[index][params.$person].toLocaleLowerCase();
 
         db.run("INSERT INTO verbs (gid, vid, mid, tid, pid, str) \
                 SELECT gid.id, voice.id, mood.id, tense.id, person.id, $name AS str \
@@ -257,7 +257,7 @@ function handlePOST(url, body, response) {
 
     // The json is fine, we check the url
     // We expect <domain>/verbs/[infinitive]
-    var matches = url.match(/^\/verbs\/([a-zA-Z]+$)/);
+    var matches = url.match(/^\/verbs\/([a-z]+$)/);
     if(matches) {
         
         //url is fine, we check every property
@@ -311,6 +311,7 @@ function returnVerbList(db, callback) {
 function searchVerb(db, query, callback) {
 
     if(!query) callback("Missing search term", 400);
+    if(query.length < 2) callback("Query is too short", 400);
     else {
         db.all("SELECT infinitive, voice.str AS voice, mood.str AS mood ,tense.str AS tense ,person.str AS person, verbs.str AS name \
                 FROM verbs "+JOIN+" WHERE verbs.str LIKE ?", "%"+query+"%",function(e, rows) {

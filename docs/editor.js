@@ -25,7 +25,7 @@ function createWizard(el) {
 		input.className = "form-control input-padding wiz-input";
 		input.fobj = {};
 		input.oninput = function() {
-			this.fobj[this.id] = this.value.trim();
+			this.fobj[this.id] = this.value.trim().toLocaleLowerCase();
 		}
 		cont.appendChild(input);
 	}
@@ -91,7 +91,6 @@ function save() {
 		if(s != 201) {
 			console.log(r.message);
 		} else {
-			inf.isnew
 			alert("saved");
 		}
 	});

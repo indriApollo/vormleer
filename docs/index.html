@@ -20,7 +20,7 @@
 <div class="container-fluid">
 	<div class="row header">
 		<div class="col-md-3">
-			<h1>VORMLEER</h1>
+			<h1 class="brand-title">VORMLEER</h1>
 		</div>
 		<div class="col-md-9">
 			<form class="form-inline">
@@ -82,20 +82,36 @@
 		</div>
 	</div>
 	<div id="content-container" class="row">
-		
+		<h1 class="greetings">Start searching !</h1>
 	</div>
 </div>
 <style type="text/css">
 	.header {
-		margin-top: 10px;
+		padding-top: 10px;
 		margin-bottom: 10px;
-		border-bottom: 1px solid black;
+		background-color: #6BB9F0;
+		box-shadow: 0 0 5px #000;
 	}
 	#content-container {
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
 		justify-content: center;
+	}
+	.greetings {
+		text-align: center;
+		margin-top: 20vh;
+		font-size: 100px;
+		color: #22A7F0;
+	}
+	.brand-title {
+		color: #000;
+	}
+	.card {
+		margin: 5px;
+	}
+	.breadcrumb {
+		cursor: pointer;
 	}
 </style>
 </body>

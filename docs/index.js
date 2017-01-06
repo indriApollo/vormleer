@@ -6,13 +6,9 @@ var filter = {};
 function createcard(voice, mood, tense, infinitive, conjugation) {
 
 	var cont = document.getElementById("content-container");
-	var div = document.createElement("div");
-	div.className="col-md-3";
+	
 	var card = document.createElement("div");
 	card.className = "card";
-
-	//var cardHeader = document.createElement("div");
-	//cardHeader.className = "card-header";
 
 	var nav = document.createElement("nav");
 	nav.className = "breadcrumb card-header";
@@ -50,8 +46,7 @@ function createcard(voice, mood, tense, infinitive, conjugation) {
 	}
 
 	card.appendChild(ul);
-	div.appendChild(card);
-	cont.appendChild(div);
+	cont.appendChild(card);
 }
 
 function handleBreadcrumbClick(el, pname) {
@@ -79,7 +74,7 @@ function handleBreadcrumbClick(el, pname) {
 
 function search(query) {
 	document.getElementById("content-container").innerHTML = "";
-	if(!query) return;
+	if(!query || query.length < 2) return;
 	request("verbs/search/"+query, function(s,r) {
 		if(s != 200) {
 			console.log(r.message);
@@ -130,23 +125,6 @@ function setFilter(el, param) {
 
 }
 
-window.onload = function() {
-
-	function setEvent(param) {
-		var els = document.getElementsByClassName("selector-"+param);
-		for (var i = 0; i < els.length ; i++) {
-			els[i].addEventListener("click", function(){setFilter(this, param)}, false);
-		}
-	}
-
-	setEvent("voice");
-	setEvent("mood");
-	setEvent("tense");
-
-	document.getElementById("search-input").value = "";
-	document.getElementById("inf-input").value = "";
-}
-
 function request(uri,callback) {
 
     var url = PROTOCOL+"://"+HOST+"/"+uri;
@@ -164,4 +142,21 @@ function request(uri,callback) {
     };
     xhr.open("GET", url);
     xhr.send();
+}
+
+window.onload = function() {
+
+	function setEvent(param) {
+		var els = document.getElementsByClassName("selector-"+param);
+		for (var i = 0; i < els.length ; i++) {
+			els[i].addEventListener("click", function(){setFilter(this, param)}, false);
+		}
+	}
+
+	setEvent("voice");
+	setEvent("mood");
+	setEvent("tense");
+
+	document.getElementById("search-input").value = "";
+	document.getElementById("inf-input").value = "";
 }

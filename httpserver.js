@@ -1,9 +1,6 @@
-//EXTRA'S : https
-
 var http = require('http');
 var fs = require('fs');
 var zlib = require('zlib');
-//var sqlite3 = require('sqlite3');
 
 const PORT = 8080;
 

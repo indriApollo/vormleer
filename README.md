@@ -1,4 +1,12 @@
 # vormleer
+## prerequisites
+* node.js 7 on Debian Jessie
+* fail2ban
+* ufw
+* lighttpd
+* let's encrypt
+
+
 
 ## node.js 7 on Debian Jessie
 
@@ -96,20 +104,20 @@ Based on https://nwgat.ninja/setting-up-letsencrypt-with-lighttpd/
 
 `# lsof -i tcp:443`
 
-### combine files into ssl.pem
+#### combine files into ssl.pem
 
 `cd /etc/letsencrypt/live/<yourdomain>`
 
 `cat privkey.pem cert.pem > ssl.pem`
 
-### Forward Secrecy & Diffie Hellman Ephemeral Parameters
+#### Forward Secrecy & Diffie Hellman Ephemeral Parameters
 
 `cd /etc/ssl/certs`
 
 `openssl dhparam -out dhparam.pem 4096`
 *Took about 15 mins on my 2 core vps*
 
-### lighttpd config
+#### lighttpd config
 
 `# nano /etc/lighttpd/conf-enabled/<yourdomain>.conf`
 

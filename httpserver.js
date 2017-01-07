@@ -3,13 +3,14 @@ var fs = require('fs');
 var zlib = require('zlib');
 
 const PORT = 8080;
+const SRVROOT = "docs/";
 
 var pages = [];
 
 function cache(filename, callback) {
     
     var chunks = [];
-    var rstream = fs.createReadStream(filename).on('open', function() {
+    var rstream = fs.createReadStream(SRVROOT+filename).on('open', function() {
         rstream.pipe(zlib.createGzip()).on('data', function(chunk) {
             chunks.push(chunk);
         }).on('end', function() {

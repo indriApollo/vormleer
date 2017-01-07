@@ -1,10 +1,10 @@
 # vormleer
 ## prerequisites
-* [node.js 7 on Debian Jessie](#d#nodejs-7-on-debian-jessie)
-* [fail2ban]()
-* [ufw]()
-* [lighttpd]()
-* [let's encrypt]()
+* [node.js 7 on Debian Jessie](#nodejs-7-on-debian-jessie)
+* [fail2ban](#fail2ban)
+* [ufw](#ufw)
+* [lighttpd](#lighttpd)
+* [let's encrypt](#lets-encrypt)
 
 
 

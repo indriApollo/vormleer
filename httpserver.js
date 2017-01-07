@@ -1,3 +1,5 @@
+// a simple test http server that only serves the index and the editor
+
 var http = require('http');
 var fs = require('fs');
 var zlib = require('zlib');
@@ -19,12 +21,11 @@ function cache(filename, callback) {
         });
     });
 }
-var filenames = ['index.html', 'editor.html'];
+var filenames = ['index.html', 'index.js', 'editor.html', 'editor.js'];
 var jobs = filenames.length;
 for(var i = 0; i < jobs ; i++) {
     cache(filenames[i], function(r,f) {
-        var l = f.split('.')[0];
-        pages[l] = r;
+        pages[f] = r;
         --jobs;
         if(jobs === 0) server();
     });
@@ -33,7 +34,7 @@ for(var i = 0; i < jobs ; i++) {
 function server() {
     http.createServer(function(request, response) {
 
-        var headers = request.headers;
+        //var headers = request.headers;
         var method = request.method;
         var url = request.url;
         var body = [];
@@ -44,7 +45,7 @@ function server() {
 
         request.on('error', function(err) {
             console.error(err);
-            response.statusCode = 400;
+            response.statusCode = 500;
             response.end();
 
         }).on('data', function(chunk) {
@@ -59,22 +60,23 @@ function server() {
                 response.setHeader('Content-Type', 'text/html; charset=utf8');
                 response.setHeader('Content-Encoding', 'gzip');
 
-                if(url == '/' || url == '/index.html') {
-                    data = pages['index'];
-                }
-                else if(url == '/editor') {
-                    data = pages['editor'];
-                }
-                else {    
+                //routes
+                if(url == '/' || url == '/index.html')
+                    data = pages['index.html'];
+                else if(url == '/index.js')
+                    data = pages['index.js'];
+                else if(url == '/editor')
+                    data = pages['editor.html'];
+                else if(url == '/editor.js')
+                    data = pages['editor.js'];
+                else  
                     response.statusCode = 404;
-                }
             } else {
                 response.statusCode = 400;
             }
 
             response.setHeader('Content-Length',Buffer.byteLength(data, 'utf8'));
-            response.write(data);
-            response.end();
+            response.end(data);
         });
     }).listen(PORT);
     console.log("server listening on "+PORT);

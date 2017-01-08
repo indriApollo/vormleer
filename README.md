@@ -98,9 +98,9 @@ Based on https://nwgat.ninja/setting-up-letsencrypt-with-lighttpd/
 
 #### Get certbot & auth 
 
-`git clone https://github.com/certbot/certbot && cd certbot`
+`$ git clone https://github.com/certbot/certbot && cd certbot`
 
-`./letsencrypt-auto --standalone auth`
+`$ ./letsencrypt-auto --standalone auth`
 
 *If let's encrypt complains about port 443 being in use check with:*
 
@@ -108,15 +108,15 @@ Based on https://nwgat.ninja/setting-up-letsencrypt-with-lighttpd/
 
 #### combine files into ssl.pem
 
-`cd /etc/letsencrypt/live/<yourdomain>`
+`# cd /etc/letsencrypt/live/<yourdomain>`
 
-`cat privkey.pem cert.pem > ssl.pem`
+`# cat privkey.pem cert.pem > ssl.pem`
 
 #### Forward Secrecy & Diffie Hellman Ephemeral Parameters
 
-`cd /etc/ssl/certs`
+`# cd /etc/ssl/certs`
 
-`openssl dhparam -out dhparam.pem 4096`
+`# openssl dhparam -out dhparam.pem 4096`
 *Took about 15 mins on my 2 core vps*
 
 #### lighttpd config
@@ -164,7 +164,7 @@ save with ctrl^x then y
 
 #### get the bcrypt and sqlite3 modules
 
-`npm install bcrypt sqlite3`
+`$ npm install bcrypt sqlite3`
 
 
 ## set up the sqlite database

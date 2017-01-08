@@ -2,12 +2,13 @@
 
 var http = require('http');
 var zlib = require('zlib');
-var sqlite3 = require('sqlite3').verbose();
+var sqlite3 = require('sqlite3');
 var bcrypt = require('bcrypt');
 
 const EDITORTOKEN = "$2a$08$C1wg4qsWaDsaiIFJISy1UuNIzzZXR2r.19HnCcvC4LMXIMM9BxvNK";
 const PORT = 8081;
 const DBNAME = 'vormleer.db';
+
 const VALID_PROPERTIES = {
     voice:[
         "active",
@@ -44,6 +45,8 @@ const VALID_PROPERTIES = {
         "none"
     ]
 }
+
+// join all the different tables on their corresponding id in verbs
 const JOIN = "JOIN gid ON verbs.gid=gid.id JOIN voice ON verbs.vid=voice.id \
     JOIN mood ON verbs.mid=mood.id JOIN tense ON verbs.tid=tense.id JOIN person ON verbs.pid=person.id ";
 
@@ -76,11 +79,14 @@ http.createServer(function(request, response) {
                 break;
 
             case 'POST':
+                // Post requests have to be authenticated
                 checkToken(url, body, headers, response);
                 break;
+
             case 'OPTIONS':
                 handleCORS(response);
                 break;
+
             default:
                 respond(response, "Unsupported http method", 400);
                 break;
@@ -93,16 +99,29 @@ console.log("server listening on "+PORT);
 
 function checkToken(url, body, headers, response) {
 
+    /*
+     * Check the editor token
+     *
+     * We check the validity of the token before any change can be made to the db
+     * The token is compared with a constant bcrypt hash (EDITORTOKEN)
+     * A salt length of 8 means we can honor a request in less than 100 ms
+     * (Salt length 16 takes nearly 5 seconds to compare !)
+     * Ideally we should generate a random string to anthenticate requests 
+     * once a strong password has been checked but I want to keep it simple for the time being
+     */
+
     if(!headers["editor-token"]) {
         respond(response, "Missing editor token", 403);
         return;
     }
 
+    // compare happens asynchronously to avoid locking the entire server
     bcrypt.compare(headers["editor-token"], EDITORTOKEN, function(e,r) {
         if(e) {
             console.log(e.message);
             respond(response, "BCRYPT ERROR", 500);
         } else if(r) {
+            // We forward the post equest to it's handler
             handlePOST(url, body, response);
         } else {
             respond(response, "Invalid editor token", 403);
@@ -111,19 +130,33 @@ function checkToken(url, body, headers, response) {
 }
 
 function handleCORS(response) {
+
+    /*
+     * Handle Cross-Origin Resource Sharing (CORS)
+     *
+     * See : https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Preflighted_requests
+     */
     
+    // The preflighted requests expects http 200 for a successful request
     response.statusCode = 200;
+    // We allow requests from any origin
     response.setHeader('Access-Control-Allow-Origin', '*');
+    // We have to allow explicitly allow Editor-Token since it's a custom header
     response.setHeader('Access-Control-Allow-Headers', 'Editor-Token,User-Agent,Content-Type'); //can't use * !
+    // We allow POST, GET and OPTIONS http methods
     response.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     response.end();
 }
 
 function respond(response, data, status) {
 
-    if(status != 200 && status != 201)
+    // http 200 reponses already have json data
+    // Other status codes are using a simple json message: <msg> format
+    if(status != 200)
         data = { message: data};
 
+    // We pretty print the json data and store it in  an utf-8 buffer
+    // Storing it in a buffer means that we can easily gzip it later
     var buf = Buffer.from(JSON.stringify(data, null, 4), 'utf-8');
 
     response.statusCode = status;
@@ -193,6 +226,7 @@ function insertVerb(db, params, conjugation, callback) {
                 rollbacktx();
             }
             else if(++index < conjugation.length) {
+                // We recursively call ourselves until all the conjugations have been inserted
                 insertparamstx(index);
             }
             else committx();
@@ -201,6 +235,10 @@ function insertVerb(db, params, conjugation, callback) {
 
     function cleartensetx() {
         
+        // We delete every entry with the given conjugation (infinitive, voice, mood, tense combination)
+        // That way we avoid unnecessary duplicate rows
+        // (we cant use a unique constraint since the same word can have multiple conjugations)
+        // Added bonus : insert new, update and delete can all be made with the same function
         db.run("DELETE FROM verbs WHERE verbs.id IN \
                 (SELECT verbs.id FROM verbs "+JOIN+" \
                 WHERE infinitive=? AND voice.str=? AND mood.str=? AND tense.str=?)", [
@@ -209,10 +247,9 @@ function insertVerb(db, params, conjugation, callback) {
             if(e) {
                 console.log(e.message);
                 rollbacktx();
-                throw Error();
             } else {
                 console.log("delete done");
-                //an empty conjugation array means only a deletion
+                // An empty conjugation array means only a deletion
                 if(conjugation.length > 0) insertparamstx("0");
                 else committx();
             }
@@ -220,6 +257,8 @@ function insertVerb(db, params, conjugation, callback) {
     }
 
     function insertgidtx() {
+
+        // We create an id for new infintives (used to group verbs)
         db.run("INSERT OR IGNORE INTO gid (infinitive) VALUES (?)", params.$infinitive, function(e) {
             if(e) {
                 console.log(e.message);
@@ -234,6 +273,8 @@ function insertVerb(db, params, conjugation, callback) {
 
 function dbRequestHandler(response, func, args) {
 
+    // We use a new db object for every transaction to assure isolation
+    // See https://github.com/mapbox/node-sqlite3/issues/304
     var db = new sqlite3.Database(DBNAME);
     func(db, ...args, function(msg, status) { //note ... -> spread operator (I know, right?)
         db.close();
@@ -256,19 +297,33 @@ function handlePOST(url, body, response) {
     }
 
     // The json is fine, we check the url
-    // We expect <domain>/verbs/[infinitive]
+    // We expect <domain>/verbs/<infinitive>
     var matches = url.match(/^\/verbs\/([a-z]+$)/);
     if(matches) {
         
-        //url is fine, we check every property
-        try {
-            function checkString(property) {
-                return ( jsonreq.hasOwnProperty(property) && VALID_PROPERTIES[property].indexOf(jsonreq[property]) > -1 );
-            }
+        // url is fine, we check every property
 
-            if(!checkString("voice")) throw "voice";
-            if(!checkString("mood")) throw "mood";
-            if(!checkString("tense")) throw "tense";
+        /*
+         * Expected json data :
+         *  {
+         *      "voice": <voice>,
+         *      "mood": <mood>,
+         *      "tense": <tense>,
+         *      "conjugation": [
+         *          <person>: <name>,
+         *          ...
+         *      ]
+         *  }
+         */
+
+        try {
+            var pnames = ["voice","mood","tense"];
+            for(var i = 0; i < pnames.length; i++) {
+                var property = pnames[i];
+                if(!jsonreq.hasOwnProperty(property)
+                    || !VALID_PROPERTIES[property].indexOf(jsonreq[property]) > -1 )
+                    throw property;
+            }
 
             if(!jsonreq.hasOwnProperty("conjugation")
                 || !Array.isArray(jsonreq.conjugation))
@@ -279,24 +334,26 @@ function handlePOST(url, body, response) {
             return;
         }
 
-        //All properties are present and values are valid
+        // All properties are present and values are valid
 
-        //Store in db
+        // Store in db
         var params = {};
         params.$voice = jsonreq.voice;
         params.$mood = jsonreq.mood;
         params.$tense = jsonreq.tense;
         params.$infinitive = matches[1];
+        // params.$person
+        // params.$name
 
         dbRequestHandler(response, insertVerb, [params, jsonreq.conjugation]);
 
     }
-    //Wrong uri -> complain
+    // Wrong uri -> complain
     else
         respond(response, "Unknown POST uri", 404);
 }
 
-function returnVerbList(db, callback) {
+function returnListAllInfinitives(db, callback) {
 
     var result = [];
     db.each("SELECT infinitive FROM gid", [], function(e,row) {
@@ -325,11 +382,13 @@ function returnConjugation(db, cmd, callback) {
 
     var params = {};
 
+    //cmd's are : infinitive, voice, mood, tense, person
     if(cmd.length > 6) {
         callback("Too many parameters", 400);
         return;
     }
 
+    // We at least need an infintive else -> abort
     params.$infinitive = cmd[1];
     if(!params.$infinitive) {
         callback("Missing infinitive parameter", 400);
@@ -337,51 +396,35 @@ function returnConjugation(db, cmd, callback) {
     }
 
     var clause = "WHERE infinitive=$infinitive ";
+    var pnames = [0,0,"voice","mood","tense","person"];
 
-    if(cmd[2] && cmd[2] !="*") {
-        if(VALID_PROPERTIES.voice.indexOf(cmd[2]) <= -1) {
-            callback("Invalid voice parameter", 400);
+    // We check the presence and validity of every property to build the final where clause
+    for(var i = 2; i < cmd.length; i++) {
+        if(cmd[i] == "*") continue;
+
+        var property = pnames[i];
+        if(VALID_PROPERTIES[property].indexOf(cmd[i]) <= -1) {
+            callback("Invalid "+property+" parameter", 400);
             return;
         }
-        params.$voice = cmd[2];
-        clause+= "AND voice.str=$voice ";
-    }
-
-    if(cmd[3] && cmd[3] !="*") {
-        if(VALID_PROPERTIES.mood.indexOf(cmd[3]) <= -1) {
-            callback("Invalid mood parameter", 400);
-            return;
-        }
-        params.$mood = cmd[3];
-        clause += "AND mood.str=$mood ";
-    }
-
-    if(cmd[4] && cmd[4] !="*") {
-        if(VALID_PROPERTIES.tense.indexOf(cmd[4]) <= -1) {
-            callback("Invalid tense parameter", 400);
-            return;
-        }
-        params.$tense = cmd[4];
-        clause += "AND tense.str=$tense ";
-    }
-
-    if(cmd[5] && cmd[5] !="*") {
-        if(VALID_PROPERTIES.person.indexOf(cmd[5]) <= -1) {
-            callback("Invalid person parameter", 400);
-            return;
-        }
-        params.$person = cmd[5];
-        clause += "AND person.str=$person ";
+        params.["$"+property] = cmd[i];
+        // ex : AND "voice.str=$voice "
+        clause+= "AND "+property+".str=$"+property+" ";
     }
 
     var result = [];
     db.each("SELECT voice.str AS voice, mood.str AS mood, tense.str AS tense, person.str AS person, verbs.str AS name \
-            FROM verbs "+JOIN+clause+" ORDER BY voice AND mood AND tense", params, function(e,row) {
+            FROM verbs "+JOIN+clause+" ORDER BY voice AND mood AND tense", params,
+        // row callback (is omitted if no results)
+        function(e,row) {
         if(e) {
             console.log(e.message);
             callback("DB ERROR", 500);
         } else {
-            var prev = (result.length > 0) ? result[result.length-1].voice+result[result.length-1].mood+result[result.length-1].tense : "";
+            // We want to group the results by voice, mood ,tense combination
+            var pres = result[result.length-1];
+            var prev = (result.length > 0) ? pres.voice+pres.mood+pres.tense : "";
+            // We push a new object to results if the combination changes
             if(row.voice+row.mood+row.tense != prev) {
                 result.push({
                     voice: row.voice,
@@ -390,14 +433,15 @@ function returnConjugation(db, cmd, callback) {
                     conjugation: []
                 });
             }
-            var fobj = {};
-            fobj[row.person] = row.name;
-            result[result.length-1].conjugation.push(fobj);
+            // We push the person/name pair to the previously created combination
+            var conj = {};
+            conj[row.person] = row.name;
+            pres.conjugation.push(conj);
         }
+    // completion callback
     }, function(e, nrows) {
         if(e) {
             console.log(e.message);
-            throw Error();
             callback("DB ERROR", 500);
         } else {
             callback(result, 200);
@@ -409,24 +453,52 @@ function handleGET(url, response) {
 
     console.log("GET request for "+url);
     
+    // We expect <domain>/verbs/(<infinitive>/<voice>/<mood>/<tense>/<person>)
+    // or        <domain>/verbs/search/<query>
     var matches = url.match(/^\/verbs\/?([a-zA-Z1-3/*_]*$)/);
     if(matches) {
         var cmd = matches[1];
         if(!cmd) {
-            dbRequestHandler(response, returnVerbList, []);
+            dbRequestHandler(response, returnListAllInfinitives, []);
         } else {
             var cmds = cmd.split("/");
             if(cmds[0] == "search") {
+                /*
+                 * Search for query and return results as an array(may be empty) of :
+                 *  {
+                 *      "infinitive": <infinitive>
+                 *      "voice": <voice>,
+                 *      "mood": <mood>,
+                 *      "tense": <tense>,
+                 *      "conjugation": [
+                 *          <person>: <name>,
+                 *          ...
+                 *      ]
+                 *  }
+                 */
                 dbRequestHandler(response, searchVerb,[cmds[1]]);
             }
             else if(cmds[0] == "conjugation") {
+                /*
+                 * Return the requested conjugation as an array(may be empty) of :
+                 *  {
+                 *      "voice": <voice>,
+                 *      "mood": <mood>,
+                 *      "tense": <tense>,
+                 *      "conjugation": [
+                 *          <person>: <name>,
+                 *          ...
+                 *      ]
+                 *  }
+                 */
                 dbRequestHandler(response, returnConjugation, [cmds]);
             }
             else
+                // Unknown cmd -> complain
                 respond(response, "Unknown /verbs uri", 404);
         }
     }
-    //Wrong uri -> complain
+    // Wrong uri -> complain
     else
         respond(response, "Unknown GET uri", 404);
 }

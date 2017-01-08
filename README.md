@@ -1,5 +1,49 @@
 # vormleer
-## prerequisites
+
+Vormleer is an online latin conjugation browser where you can list and search for latin verb conjugations.
+
+The conjugations can be filtered by voice, mood and tense.
+
+## Client
+
+The client is built with HTML5 and Bootstrap 4. The requests are made with ajax.
+
+### Conjugation browser (index.html)
+
+This is where the user can search after specific conjugations or list the entire conjugation of an infinitive, additionally filtered on voice, mood or tense.
+
+#### Usage
+
+* To search a specific conjugation, type your word into "search verb". The results get refreshed while typing.
+* To list the entire conjugation of an infinitive, type the infinitive into "infinitive" and click the "Show" button.
+	* The conjugation can be filtered by selecting values in the voice, mood an tense dropdown menu's.
+	
+### Editor (editor.html)
+
+The editor is where conjugations are added, edited or removed.
+The user has to enter the correct editor token in the "token" field to be able to modify anything.
+
+#### Usage
+
+* To start with a fresh verb, enter a new infinitive into the "search" field then click "new".
+* To select an existing verb, click on its infintive in the list. You can use the search field to narrow down the displayed infinitives.
+	* The selected infinitive will be displayed in the page header.
+* The voice, moods and tenses are organized in dropdown's in the central menu. Clicking on the header of a collapsed menu will reveal its children.
+* Click on a mood/tense to start editing the selected verb. A wizard will be created where all the persons from the selected form can be filled.
+* To delete a form, leave the input blank
+* Send your modified form to the server by clicking on "save"
+	
+
+## Server $ db
+
+The vormleer server exposes it's data through a somewhat restful api (see code comments for json reqs format).
+
+It uses node.js, bcrypt and sqlite3. A lighttpd webserver is used to handle https (let's encrypt) and to proxy the traffic to the node process.
+The server is launched as a daemon with a systemd service file.
+ufw (firewall) and fail2ban are additionally used to secure the server.
+
+## Server & db setup (assuming debian jessie)
+## prerequisites 
 * [fail2ban](#fail2ban)
 * [ufw](#ufw)
 * [lighttpd](#lighttpd)

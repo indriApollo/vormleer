@@ -10,29 +10,30 @@
 
 ## Setting up the vormleer db
 * [set up the sqlite database](#set-up-the-sqlite-database)
-* [create a systemd service file](# create-a-systemd-service-file)
+* [set the editor token](#set-the-editor-token)
+* [create a systemd service file](#create-a-systemd-service-file)
 * [launch and monitor the db](#launch-and-monitor-the-db)
 
 
 
 ## fail2ban
 
-#### install fail2ban
+#### Install fail2ban
 
 `# apt install fail2ban`
 
-#### check logs
+#### Check logs
 `# cat /var/log/fail2ban.log `
 *watch all the bots getting banned*
 
 
 ## ufw
 
-#### install ufw
+#### Install ufw
 
 `# apt install ufw`
 
-#### allow needed services
+#### Allow needed services
 
 `# ufw allow ssh`
 
@@ -40,11 +41,11 @@
 
 `# ufw allow https`
 
-#### enable ufw
+#### Enable ufw
 
 `# ufw enable`
 
-#### check status
+#### Check status
 
 `# ufw status`
 
@@ -52,13 +53,13 @@
 
 ## lighttpd
 
-#### install lighttpd
+#### Install lighttpd
 
 `# apt install lighttpd`
 
 ### mod_proxy
 
-#### add mod_proxy in lighttpd.conf
+#### Add mod_proxy in lighttpd.conf
 
 `# nano /etc/lighttpd/lighttpd.conf`
 
@@ -70,7 +71,7 @@ server.modules = (
 
 ```
 
-#### configure the proxy
+#### Configure the proxy
 
 `# nano /etc/lighttpd/conf-enabled/<yourdomain>.conf`
 
@@ -84,7 +85,7 @@ $HTTP["host"] == "<yourdomain>" {
 
 save with ctrl^x then y
 
-#### reload lighttpd
+#### Reload lighttpd
 
 `# systemctl reload lighttpd`
 
@@ -106,7 +107,7 @@ Based on https://nwgat.ninja/setting-up-letsencrypt-with-lighttpd/
 
 `# lsof -i tcp:443`
 
-#### combine files into ssl.pem
+#### Combine files into ssl.pem
 
 `# cd /etc/letsencrypt/live/<yourdomain>`
 
@@ -139,21 +140,21 @@ $SERVER["socket"] == ":443" {
 
 save with ctrl^x then y
 
-#### reload lighttpd
+#### Reload lighttpd
 
 `# systemctl reload lighttpd`
 
 
 ## sqlite3
 
-#### install sqlite3
+#### Install sqlite3
 
 `# apt install sqlite3`
 
 
 ## node.js 7 on Debian Jessie
 
-#### get node from the NodeSource Debian and Ubuntu binary distributions repository
+#### Get node from the NodeSource Debian and Ubuntu binary distributions repository
 
 `# curl -sL https://deb.nodesource.com/setup_7.x | bash -`
 
@@ -162,12 +163,12 @@ save with ctrl^x then y
 
 ## npm packages
 
-#### get the bcrypt and sqlite3 modules
+#### Get the bcrypt and sqlite3 modules
 
 `$ npm install bcrypt sqlite3`
 
 
-## set up the sqlite database
+## Set up the sqlite database
 
 `$ cd path/to/vormleer`
 
@@ -178,13 +179,33 @@ save with ctrl^x then y
 Exit sqlite with ctrl^D or with `sqlite> .exit`
 
 
-## create a systemd service file
+## Set the editor token
+
+You can use the included bcryptpass script to hash your token
+A salt length of 8 is currently recommended. It takes < 100 ms to compare
+
+`$ ./bcryptpass <passwd> <salt length>`
+
+#### Save your hash in db.js
+
+`$ nano db.js`
+
+```
+...
+const EDITORTOKEN = "<your hash>";
+...
+```
+
+Save with ctrl^x then y
+
+
+## Create a systemd service file
 
 `$ cd /etc/systemd/system`
 
 `# nano vormleerd.service`
 
-#### paste the following (dont forget to replace WorkingDirectory and user)
+#### Paste the following (dont forget to replace WorkingDirectory and user)
 
 ```
 [Unit]
@@ -204,22 +225,21 @@ WantedBy=multi-user.target
 
 ```
 
-save with ctrl^x then y
+Save with ctrl^x then y
 
 
-## launch and monitor the db
+## Launch and monitor the db
 
-#### launch the db
+#### Launch the db
 
 `# systemctl start vormleerd`
 
-#### monitor the db
+#### Monitor the db
 
-with systemctl status
+With systemctl status
 
 `# systemctl status vormleerd`
 
-with journalctl
+With journalctl
 
 `# journalctl -u vormleerd -n`
-

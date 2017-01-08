@@ -1,18 +1,18 @@
 # vormleer
 ## prerequisites
-* [node.js 7 on Debian Jessie](#nodejs-7-on-debian-jessie)
 * [fail2ban](#fail2ban)
 * [ufw](#ufw)
 * [lighttpd](#lighttpd)
 * [let's encrypt](#lets-encrypt)
+* [sqlite3](#sqlite3)
+* [node.js 7 on Debian Jessie](#nodejs-7-on-debian-jessie)
+* [npm packages (bcrypt & node-sqlite3)](#npm-packages)
 
+## Setting up the vormleer db
+* [set up the sqlite database](#set-up-the-sqlite-database)
+* [create a systemd service file](# create-a-systemd-service-file)
+* [launch and monitor the db](#launch-and-monitor-the-db)
 
-
-## node.js 7 on Debian Jessie
-
-`# curl -sL https://deb.nodesource.com/setup_7.x | bash -`
-
-`# apt-get install -y nodejs build-essential` *build-essential is used to compile and install native addons from npm*
 
 
 ## fail2ban
@@ -82,6 +82,8 @@ $HTTP["host"] == "<yourdomain>" {
 }
 ```
 
+save with ctrl^x then y
+
 #### reload lighttpd
 
 `# systemctl reload lighttpd`
@@ -135,6 +137,89 @@ $SERVER["socket"] == ":443" {
 }
 ```
 
+save with ctrl^x then y
+
 #### reload lighttpd
 
 `# systemctl reload lighttpd`
+
+
+## sqlite3
+
+#### install sqlite3
+
+`# apt install sqlite3`
+
+
+## node.js 7 on Debian Jessie
+
+#### get node from the NodeSource Debian and Ubuntu binary distributions repository
+
+`# curl -sL https://deb.nodesource.com/setup_7.x | bash -`
+
+`# apt-get install -y nodejs build-essential` *build-essential is used to compile and install native addons from npm*
+
+
+## npm packages
+
+#### get the bcrypt and sqlite3 modules
+
+`npm install bcrypt sqlite3`
+
+
+## set up the sqlite database
+
+`$ cd path/to/vormleer`
+
+`$ sqlite3 vormleer.db` *this creates an empty database*
+
+`sqlite> .read vormleer.sql` *this will create all the tables and insert all the values needed for the base vormleer db*
+
+Exit sqlite with ctrl^D or with `sqlite> .exit`
+
+
+## create a systemd service file
+
+`$ cd /etc/systemd/system`
+
+`# nano vormleerd.service`
+
+#### paste the following (dont forget to replace WorkingDirectory and user)
+
+```
+[Unit]
+Description=Node.js vormleer db
+Requires=lighttpd.service
+
+[Service]
+WorkingDirectory=/path/to/vormleer
+ExecStart=/usr/bin/node db.js
+Restart=always
+RestartSec=1
+SyslogIdentifier=vormleerd
+User=<user>
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+save with ctrl^x then y
+
+
+## launch and monitor the db
+
+#### launch the db
+
+`# systemctl start vormleerd`
+
+#### monitor the db
+
+with systemctl status
+
+`# systemctl status vormleerd`
+
+with journalctl
+
+`# journalctl -u vormleerd -n`
+

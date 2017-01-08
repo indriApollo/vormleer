@@ -5,7 +5,7 @@ var zlib = require('zlib');
 var sqlite3 = require('sqlite3');
 var bcrypt = require('bcrypt');
 
-const EDITORTOKEN = "$2a$08$C1wg4qsWaDsaiIFJISy1UuNIzzZXR2r.19HnCcvC4LMXIMM9BxvNK";
+const EDITORTOKEN = "$2a$16$f/BCcwGHUNDN5mUxPpGe8OODFYGirtAlGbZbfOpeagPC81r.vh1Ke";
 const PORT = 8081;
 const DBNAME = 'vormleer.db';
 

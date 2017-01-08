@@ -34,7 +34,7 @@ The user has to enter the correct editor token in the "token" field to be able t
 * Send your modified form to the server by clicking on "save"
 	
 
-## Server $ db
+## Server&$ db
 
 The vormleer server exposes it's data through a somewhat restful api (see code comments for json reqs format).
 

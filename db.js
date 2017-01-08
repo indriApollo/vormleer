@@ -321,7 +321,7 @@ function handlePOST(url, body, response) {
             for(var i = 0; i < pnames.length; i++) {
                 var property = pnames[i];
                 if(!jsonreq.hasOwnProperty(property)
-                    || !VALID_PROPERTIES[property].indexOf(jsonreq[property]) > -1 )
+                    || VALID_PROPERTIES[property].indexOf(jsonreq[property]) === -1 )
                     throw property;
             }
 
@@ -407,7 +407,7 @@ function returnConjugation(db, cmd, callback) {
             callback("Invalid "+property+" parameter", 400);
             return;
         }
-        params.["$"+property] = cmd[i];
+        params["$"+property] = cmd[i];
         // ex : AND "voice.str=$voice "
         clause+= "AND "+property+".str=$"+property+" ";
     }
@@ -436,7 +436,7 @@ function returnConjugation(db, cmd, callback) {
             // We push the person/name pair to the previously created combination
             var conj = {};
             conj[row.person] = row.name;
-            pres.conjugation.push(conj);
+            result[result.length-1].conjugation.push(conj);
         }
     // completion callback
     }, function(e, nrows) {

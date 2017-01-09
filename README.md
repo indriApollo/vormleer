@@ -8,6 +8,8 @@ The conjugations can be filtered by voice, mood and tense.
 
 The client is built with HTML5 and Bootstrap 4. The requests are made with ajax.
 
+The client is hosted thnaks to github pages (see https://pages.github.com/).
+
 ### Conjugation browser (index.html)
 
 This is where the user can search after specific conjugations or list the entire conjugation of an infinitive, additionally filtered on voice, mood or tense.
@@ -17,6 +19,7 @@ This is where the user can search after specific conjugations or list the entire
 * To search a specific conjugation, type your word into "search verb". The results get refreshed while typing.
 * To list the entire conjugation of an infinitive, type the infinitive into "infinitive" and click the "Show" button.
 	* The conjugation can be filtered by selecting values in the voice, mood an tense dropdown menu's.
+* Clicking on the infinitive, voice, mood or tense in the header of a result will update the filters and load the according conjugation
 	
 ### Editor (editor.html)
 
@@ -34,7 +37,7 @@ The user has to enter the correct editor token in the "token" field to be able t
 * Send your modified form to the server by clicking on "save"
 	
 
-## Server&$ db
+## Server & db
 
 The vormleer server exposes it's data through a somewhat restful api (see code comments for json reqs format).
 
@@ -200,6 +203,8 @@ save with ctrl^x then y
 
 #### Get node from the NodeSource Debian and Ubuntu binary distributions repository
 
+See https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
+
 `# curl -sL https://deb.nodesource.com/setup_7.x | bash -`
 
 `# apt-get install -y nodejs build-essential` *build-essential is used to compile and install native addons from npm*
@@ -287,3 +292,19 @@ With systemctl status
 With journalctl
 
 `# journalctl -u vormleerd -n`
+
+
+## Sources and acks
+
+##### websites
+[The official node.js documention](https://nodejs.org/dist/latest-v7.x/docs/api/)
+[Stackoverflow](http://stackoverflow.com)
+[nwgat-ninja (let's encrypt on lighttpd)](https://nwgat.ninja/setting-up-letsencrypt-with-lighttpd/)
+[codeship (systemd service file)](https://blog.codeship.com/running-node-js-linux-systemd/)
+[certbot](https://certbot.eff.org/)
+[The wonderful Arch-Wiki](https://wiki.archlinux.org/)
+[Github](https://github.com) *thanks for the free client hosting*
+
+##### people
+[Dries007](https://github.com/dries007) <3
+Hilde Leroux for providing her latin knowledge and the funds to run the db

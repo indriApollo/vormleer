@@ -46,7 +46,7 @@ The server is launched as a daemon with a systemd service file.
 ufw (firewall) and fail2ban are additionally used to secure the server.
 
 ## Server & db setup (assuming debian jessie)
-## prerequisites 
+## Prerequisites 
 * [fail2ban](#fail2ban)
 * [ufw](#ufw)
 * [lighttpd](#lighttpd)

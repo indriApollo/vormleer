@@ -297,14 +297,15 @@ With journalctl
 ## Sources and acks
 
 ##### websites
-*[The official node.js documention](https://nodejs.org/dist/latest-v7.x/docs/api/)
-*[Stackoverflow](http://stackoverflow.com)
-*[nwgat-ninja (let's encrypt on lighttpd)](https://nwgat.ninja/setting-up-letsencrypt-with-lighttpd/)
-*[codeship (systemd service file)](https://blog.codeship.com/running-node-js-linux-systemd/)
-*[certbot](https://certbot.eff.org/)
-*[The wonderful Arch-Wiki](https://wiki.archlinux.org/)
-*[Github](https://github.com) *thanks for the free client hosting*
+* [The official node.js documention](https://nodejs.org/dist/latest-v7.x/docs/api/)
+* [Stackoverflow](http://stackoverflow.com)
+* [nwgat-ninja (let's encrypt on lighttpd)](https://nwgat.ninja/setting-up-letsencrypt-with-lighttpd/)
+* [codeship (systemd service file)](https://blog.codeship.com/running-node-js-linux-systemd/)
+* [certbot](https://certbot.eff.org/)
+* [The wonderful Arch-Wiki](https://wiki.archlinux.org/)
+* [Github](https://github.com) *thanks for the free client hosting*
 
 ##### people
-*[Dries007](https://github.com/dries007) <3
-*Hilde Leroux for providing her latin knowledge and the funds to run the db
+* [Dries007](https://github.com/dries007) <3
+* Hilde Leroux for providing her latin knowledge and the funds to run the db
+* Norbert & Thierry ;)
